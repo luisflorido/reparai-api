@@ -17,3 +17,9 @@
 const Route = use('Route')
 
 Route.on('/').render('welcome')
+
+Route.post('/users', 'UserController.store')
+Route.post('/users/forgot-password', 'UserController.forgotPassword')
+Route.post('/users/set-password', 'UserController.setPassword')
+
+Route.post('/auth', 'SessionController.create')
