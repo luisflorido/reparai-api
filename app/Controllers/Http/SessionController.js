@@ -1,8 +1,8 @@
 'use strict'
 
-const { error } = use('App/Helpers/ControllerHelpers');
+const { message } = use('App/Helpers/ControllerHelpers');
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User');
-const Hash = use('Hash');
 
 class SessionController {
   /**
@@ -17,15 +17,13 @@ class SessionController {
     const { email, password } = request.only(['email', 'password']);
 
     try{
-      const user = await User.findBy('email', email);
-
       if (await auth.attempt(email, password)) {
         const user = await User.findBy('email', email);
         const token = await auth.generate(user);
 
-        return response.json({user, token});
+        return response.json(message("Logado com sucesso.", {user, token}));
       } else {
-        return response.status(400).json(error('Usuário ou senha inválidos.'))
+        return response.status(400).json(message('Usuário ou senha inválidos.'))
       }
     }catch(err) {
       console.log(err)

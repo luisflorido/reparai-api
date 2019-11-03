@@ -1,17 +1,8 @@
-function error(error, message) {
-  if (error) {
-    return {
-      app_error: {
-        status: error.status,
-        code: error.code,
-        message: message,
-      },
-    };
+function message(message, data) {
+  if (data) {
+    return {message, data};
   }
-
-  return {
-    app_error: message,
-  };
+  return {message}
 };
 
-module.exports = {error};
+module.exports = {message};

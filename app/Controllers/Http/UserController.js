@@ -1,9 +1,11 @@
 'use strict'
 
-const { error } = use('App/Helpers/ControllerHelpers');
+const { message } = use('App/Helpers/ControllerHelpers');
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User');
 const Mail = use('Mail');
 const Env = use('Env');
+/** @type {typeof import('@adonisjs/framework/src/Hash')} */
 const Hash = use('Hash');
 const CryptoJS = use('crypto-js');
 
@@ -21,7 +23,7 @@ class UserController {
     try{
       const user = await User.create(rest);
 
-      return user;
+      return message('Usuário criado com sucesso.', user);
     }catch(err){
       return response.status(err.status || 409).json();
     }
@@ -37,7 +39,7 @@ class UserController {
   async forgotPassword({request, response}) {
     const { email } = request.only(['email']);
 
-    try{
+    try {
       const user = await User.query()
         .where('email', email)
         .first();
@@ -58,7 +60,7 @@ class UserController {
         })
         return response.status(200).json();
       } else {
-        return response.status(404).json(error('Usuário não encontrado.'));
+        return response.status(404).json(message('Usuário não encontrado.'));
       }
     }catch(err){
       console.log(err)
@@ -73,13 +75,14 @@ class UserController {
       const findTokenUser = await User.query()
         .where('password_reset_token', token)
         .firstOrFail();
+
       if (findTokenUser) {
-        findTokenUser.password = await Hash.make(password);
+        findTokenUser.password = password;
         findTokenUser.password_reset_token = null;
         await findTokenUser.save();
         return response.status(200).json();
       } else {
-        return response.status(400).json(error('Token inválido!'));
+        return response.status(400).json(message('Token inválido!'));
       }
     }catch(err) {
       return response.status(err.status).json();
