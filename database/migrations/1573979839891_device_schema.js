@@ -8,7 +8,7 @@ class DeviceSchema extends Schema {
       table.increments();
       table.string('mac', 64).nullable();
       table.string('name', 45).notNullable();
-      table.boolean('active').defaultTo(false);
+      table.boolean('active').defaultTo(true);
       table.timestamps();
     });
   }

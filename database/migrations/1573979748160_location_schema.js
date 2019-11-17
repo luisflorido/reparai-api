@@ -7,6 +7,7 @@ class LocationSchema extends Schema {
     this.create('locations', (table) => {
       table.string('code', 45).unique().primary();
       table.string('name', 45).notNullable();
+      table.timestamps();
     });
   }
 

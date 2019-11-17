@@ -1,4 +1,3 @@
-'use strict'
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -7,29 +6,27 @@
 /**
  * Resourceful controller for interacting with categories
  */
+
+const Category = use('App/Models/Category');
+
 class CategoryController {
   /**
    * Show a list of all categories.
    * GET categories
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new category.
-   * GET categories/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index({ response }) {
+    try {
+      const categories = await Category.all();
+      if (categories) {
+        return response.status(200).json(categories);
+      }
+      return response.status(500).json();
+    } catch (err) {
+      return response.status(err.status || 500).json();
+    }
   }
 
   /**
@@ -40,7 +37,17 @@ class CategoryController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
+    try {
+      const { ...rest } = request.only(['code', 'name']);
+      const category = await Category.create(rest);
+      if (category) {
+        return response.status(200).json(category);
+      }
+      return response.status(500).json();
+    } catch (err) {
+      return response.status(err.status || 500).json();
+    }
   }
 
   /**
@@ -48,23 +55,24 @@ class CategoryController {
    * GET categories/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing category.
-   * GET categories/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show({
+    params, response,
+  }) {
+    try {
+      if (params && params.id) {
+        const { id } = params;
+        const category = await Category.find(id);
+        if (category) {
+          return response.status(200).json(category);
+        }
+        return response.status(404).json();
+      }
+    } catch (err) {
+      return response.status(err.status || 500).json();
+    }
+    return response.status(204).json();
   }
 
   /**
@@ -75,7 +83,23 @@ class CategoryController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {
+    try {
+      if (params && params.id) {
+        const { id } = params;
+        const { name } = request.only(['name']);
+        const category = await Category.find(id);
+        if (category) {
+          category.merge({ name });
+          await category.save();
+          return response.status(200).json(category);
+        }
+        return response.status(404).json();
+      }
+    } catch (err) {
+      return response.status(err.status || 500).json();
+    }
+    return response.status(204).json();
   }
 
   /**
@@ -83,11 +107,24 @@ class CategoryController {
    * DELETE categories/:id
    *
    * @param {object} ctx
-   * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, response }) {
+    try {
+      if (params && params.id) {
+        const { id } = params;
+        const category = await Category.find(id);
+        if (category) {
+          await category.delete();
+          return response.status(200).json();
+        }
+        return response.status(404).json();
+      }
+    } catch (err) {
+      return response.status(err.status || 500).json();
+    }
+    return response.status(204).json();
   }
 }
 
-module.exports = CategoryController
+module.exports = CategoryController;
