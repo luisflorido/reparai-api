@@ -5,8 +5,7 @@ const { message } = use('App/Helpers/ControllerHelpers');
 const User = use('App/Models/User');
 const Mail = use('Mail');
 const Env = use('Env');
-/** @type {typeof import('@adonisjs/framework/src/Hash')} */
-const Hash = use('Hash');
+const Role = use('Role');
 const CryptoJS = use('crypto-js');
 
 class UserController {
@@ -17,12 +16,15 @@ class UserController {
    * @param {import('@adonisjs/framework/src/Request')} ctx.request
    */
 
-  async store({auth, request, response}) {
+  async store({request, response}) {
     const { ...rest } = request.only(['first_name', 'last_name', 'email', 'password']);
 
     try{
       const user = await User.create(rest);
-
+      const role = await Role.findBy('slug', 'user');
+      if (role) {
+        user.roles().attach(role.id);
+      }
       return message('Usuário criado com sucesso.', user);
     }catch(err){
       return response.status(err.status || 409).json();

@@ -27,10 +27,15 @@
     "@adonisjs/mail": "^3.0.10",
     "@adonisjs/session": "^1.0.27",
     "@adonisjs/shield": "^1.0.8",
+    "adonis-acl": "^1.1.1",
     "crypto-js": "^3.1.9-1",
     "sqlite3": "^4.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  },
   "autoload": {
     "App": "./app"
   }

@@ -20,8 +20,9 @@ class SessionController {
       if (await auth.attempt(email, password)) {
         const user = await User.findBy('email', email);
         const token = await auth.generate(user);
+        const roles = await user.getRoles();
 
-        return response.json(message("Logado com sucesso.", {user, token}));
+        return response.json(message("Logado com sucesso.", {user, roles, token}));
       } else {
         return response.status(400).json(message('Usuário ou senha inválidos.'))
       }
