@@ -1,4 +1,3 @@
-'use strict'
 
 const { message } = use('App/Helpers/ControllerHelpers');
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
@@ -13,24 +12,22 @@ class SessionController {
    * @param {import('@adonisjs/framework/src/Response')} ctx.response
    */
 
-  async create({ auth, request, response }){
+  async create({ auth, request, response }) {
     const { email, password } = request.only(['email', 'password']);
 
-    try{
+    try {
       if (await auth.attempt(email, password)) {
         const user = await User.findBy('email', email);
         const token = await auth.generate(user);
         const roles = await user.getRoles();
 
-        return response.json(message("Logado com sucesso.", {user, roles, token}));
-      } else {
-        return response.status(400).json(message('Usuário ou senha inválidos.'))
+        return response.json(message('Logado com sucesso.', { user, roles, token }));
       }
-    }catch(err) {
-      console.log(err)
-      return response.status(err.status).json()
+      return response.status(400).json(message('Usuário ou senha inválidos.'));
+    } catch (err) {
+      return response.status(404).json();
     }
   }
 }
 
-module.exports = SessionController
+module.exports = SessionController;
