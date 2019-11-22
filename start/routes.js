@@ -48,4 +48,8 @@ Route.group(() => {
 
 Route.resource('messages', 'MessageController').middleware(['auth:jwt']);
 
+Route.get('services/trashed', 'ServiceController.trashed').middleware(['auth:jwt']);
+
+Route.post('services/:id/message', 'ServiceController.createMessage').middleware(['auth:jwt']);
+
 Route.resource('services', 'ServiceController').middleware(['auth:jwt']);

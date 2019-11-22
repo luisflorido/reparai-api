@@ -1,4 +1,4 @@
-'use strict'
+;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +21,8 @@ const providers = [
   '@adonisjs/auth/providers/AuthProvider',
   '@adonisjs/mail/providers/MailProvider',
   'adonis-acl/providers/AclProvider',
-]
+  '@radmen/adonis-lucid-soft-deletes/providers/SoftDeletesProvider',
+];
 
 /*
 |--------------------------------------------------------------------------
@@ -34,8 +35,8 @@ const providers = [
 */
 const aceProviders = [
   '@adonisjs/lucid/providers/MigrationsProvider',
-  'adonis-acl/providers/CommandsProvider'
-]
+  'adonis-acl/providers/CommandsProvider',
+];
 
 /*
 |--------------------------------------------------------------------------
@@ -50,8 +51,8 @@ const aceProviders = [
 |
 */
 const aliases = {
-  Role: 'Adonis/Acl/Role'
-}
+  Role: 'Adonis/Acl/Role',
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,8 @@ const aliases = {
 | Here you store ace commands for your package
 |
 */
-const commands = []
+const commands = [];
 
-module.exports = { providers, aceProviders, aliases, commands }
+module.exports = {
+ providers, aceProviders, aliases, commands 
+};

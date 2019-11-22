@@ -12,7 +12,7 @@ class Device extends Model {
   }
 
   services() {
-    return this.belongsToMany('App/Models/Service');
+    return this.hasMany('App/Models/Service');
   }
 }
 

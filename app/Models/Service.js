@@ -3,12 +3,30 @@
 const Model = use('Model');
 
 class Service extends Model {
-  device() {
-    return this.hasOne('App/Models/Device');
+  static boot() {
+    super.boot();
+
+    this.addTrait('@provider:Lucid/SoftDeletes');
   }
 
-  histories() {
-    return this.belongsToMany('App/Models/Message');
+  device() {
+    return this.belongsTo('App/Models/Device');
+  }
+
+  user() {
+    return this.belongsTo('App/Models/User');
+  }
+
+  messages() {
+    return this.hasMany('App/Models/Message');
+  }
+
+  static get hidden() {
+    return ['user_id', 'device_id'];
+  }
+
+  static get deleteTimestamp() {
+    return 'deleted_at';
   }
 }
 

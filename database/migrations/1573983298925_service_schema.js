@@ -6,9 +6,11 @@ class ServiceSchema extends Schema {
   up() {
     this.create('services', (table) => {
       table.increments();
-      table.datetime('created').nullable().defaultTo(this.fn.now());
       table.datetime('closed').nullable();
       table.text('description').notNullable();
+      table.integer('user_id').unsigned().references('users.id').index('services_user_id');
+      table.integer('device_id').unsigned().references('devices.id').index('services_device_id');
+      table.timestamp('deleted_at').nullable();
       table.timestamps();
     });
   }

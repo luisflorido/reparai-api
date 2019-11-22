@@ -10,8 +10,8 @@ class MessagesSchema extends Schema {
         .index('m_service_id');
       table.integer('user_id').unsigned().references('users.id').onDelete('cascade')
         .index('m_user_id');
-      table.datetime('date').defaultTo(this.fn.now());
       table.text('text').notNullable();
+      table.timestamp('deleted_at').nullable();
       table.timestamps();
     });
   }
