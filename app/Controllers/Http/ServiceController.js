@@ -2,13 +2,18 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
+/** @typedef {import('@adonisjs/lucid/src/Lucid/Model')} Model */
 
 /**
  * Resourceful controller for interacting with services
  */
 
+/** @type {Model} */
 const Service = use('App/Models/Service');
+/** @type {Model} */
 const Message = use('App/Models/Message');
+/** @type {Model} */
+const Device = use('App/Models/Device');
 
 class ServiceController {
   /**
@@ -21,9 +26,9 @@ class ServiceController {
   async index({ response }) {
     try {
       const services = await Service.query()
-        .with('device')
+        .with('device', builder => builder.with('categories').with('locations'))
         .with('user')
-        .with('messages')
+        .with('messages', builder => builder.with('user'))
         .fetch();
       if (services) {
         return response.status(200).json(services);
@@ -44,9 +49,9 @@ class ServiceController {
   async trashed({ response }) {
     try {
       const services = await Service.query()
-        .with('device')
+        .with('device', builder => builder.with('categories').with('locations'))
         .with('user')
-        .with('messages')
+        .with('messages', builder => builder.with('user'))
         .onlyTrashed()
         .fetch();
       if (services) {
@@ -98,16 +103,13 @@ class ServiceController {
       const { id } = params;
       try {
         const service = await Service.query()
-          .with('device')
+          .with('device', builder => builder.with('categories').with('locations'))
           .with('user')
+          .with('messages', builder => builder.with('user'))
           .where('id', id)
           .first();
-        const messages = await Message.query()
-          .with('user')
-          .where('service_id', id)
-          .fetch();
         if (service && messages) {
-          return response.status(200).json({ service, messages });
+          return response.status(200).json({ service });
         }
         return response.status(404).json();
       } catch (err) {
