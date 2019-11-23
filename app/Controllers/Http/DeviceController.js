@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */

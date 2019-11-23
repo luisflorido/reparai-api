@@ -12,8 +12,6 @@
 const Service = use('App/Models/Service');
 /** @type {Model} */
 const Message = use('App/Models/Message');
-/** @type {Model} */
-const Device = use('App/Models/Device');
 
 class ServiceController {
   /**
@@ -26,9 +24,9 @@ class ServiceController {
   async index({ response }) {
     try {
       const services = await Service.query()
-        .with('device', builder => builder.with('categories').with('locations'))
+        .with('device', (builder) => builder.with('categories').with('locations'))
         .with('user')
-        .with('messages', builder => builder.with('user'))
+        .with('messages', (builder) => builder.with('user'))
         .fetch();
       if (services) {
         return response.status(200).json(services);
@@ -49,9 +47,9 @@ class ServiceController {
   async trashed({ response }) {
     try {
       const services = await Service.query()
-        .with('device', builder => builder.with('categories').with('locations'))
+        .with('device', (builder) => builder.with('categories').with('locations'))
         .with('user')
-        .with('messages', builder => builder.with('user'))
+        .with('messages', (builder) => builder.with('user'))
         .onlyTrashed()
         .fetch();
       if (services) {
@@ -103,12 +101,12 @@ class ServiceController {
       const { id } = params;
       try {
         const service = await Service.query()
-          .with('device', builder => builder.with('categories').with('locations'))
+          .with('device', (builder) => builder.with('categories').with('locations'))
           .with('user')
-          .with('messages', builder => builder.with('user'))
+          .with('messages', (builder) => builder.with('user'))
           .where('id', id)
           .first();
-        if (service && messages) {
+        if (service) {
           return response.status(200).json({ service });
         }
         return response.status(404).json();

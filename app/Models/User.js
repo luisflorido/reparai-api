@@ -15,6 +15,7 @@ class User extends Model {
      */
     this.addHook('beforeSave', async (userInstance) => {
       if (userInstance.dirty.password) {
+        // eslint-disable-next-line no-param-reassign
         userInstance.password = await Hash.make(userInstance.password);
       }
     });
