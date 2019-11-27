@@ -21,15 +21,30 @@ class ServiceController {
    * @param {object} ctx
    * @param {Response} ctx.response
    */
-  async index({ response }) {
+  async index({ auth, response }) {
     try {
-      const services = await Service.query()
-        .with('device', (builder) => builder.with('categories').with('locations'))
-        .with('user')
-        .with('messages', (builder) => builder.with('user'))
-        .fetch();
-      if (services) {
-        return response.status(200).json(services);
+      if (auth && auth.user) {
+        const roles = await auth.user.getRoles();
+        if (roles.find((e) => e === 'adm')) {
+          const services = await Service.query()
+            .with('device', (builder) => builder.with('categories').with('locations'))
+            .with('user')
+            .with('messages', (builder) => builder.with('user'))
+            .fetch();
+          if (services) {
+            return response.status(200).json(services);
+          }
+        } else {
+          const services = await Service.query()
+            .with('device', (builder) => builder.with('categories').with('locations'))
+            .with('user')
+            .with('messages', (builder) => builder.with('user'))
+            .where('user_id', auth.user.id)
+            .fetch();
+          if (services) {
+            return response.status(200).json(services);
+          }
+        }
       }
       return response.status(500).json();
     } catch (err) {
