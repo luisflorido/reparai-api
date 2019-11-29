@@ -1,4 +1,3 @@
-
 /*
 |--------------------------------------------------------------------------
 | Routes
@@ -23,33 +22,46 @@ Route.post('/users/set-password', 'UserController.setPassword');
 
 Route.post('/auth', 'SessionController.create');
 
-Route.resource('categories', 'CategoryController')
-  .middleware(['auth:jwt'], new Map([
-    [['store', 'update', 'destroy'], ['is:(adm)']],
-  ]));
+Route.resource('categories', 'CategoryController').middleware(
+  ['auth:jwt'],
+  new Map([[['store', 'update', 'destroy'], ['is:(adm)']]])
+);
 
-Route.resource('locations', 'LocationController')
-  .middleware(['auth:jwt'], new Map([
-    [['store', 'update', 'destroy'], ['is:(adm)']],
-  ]));
+Route.resource('locations', 'LocationController').middleware(
+  ['auth:jwt'],
+  new Map([[['store', 'update', 'destroy'], ['is:(adm)']]])
+);
 
 Route.group(() => {
-  Route.resource('/', 'DeviceController')
-    .middleware(['auth:jwt'], new Map([
-      [['store', 'update', 'destroy'], ['is:(adm)']],
-    ]));
+  Route.resource('/', 'DeviceController').middleware(
+    ['auth:jwt'],
+    new Map([[['store', 'update', 'destroy'], ['is:(adm)']]])
+  );
 
-  Route.put('/:id/category', 'DeviceController.putCategories')
-    .middleware(['auth:jwt', 'is:(adm)']);
+  Route.put('/:id/category', 'DeviceController.putCategories').middleware([
+    'auth:jwt',
+    'is:(adm)',
+  ]);
 
-  Route.put('/:id/location', 'DeviceController.putLocations')
-    .middleware(['auth:jwt', 'is:(adm)']);
+  Route.put('/:id/location', 'DeviceController.putLocations').middleware([
+    'auth:jwt',
+    'is:(adm)',
+  ]);
 }).prefix('devices');
 
 Route.resource('messages', 'MessageController').middleware(['auth:jwt']);
 
-Route.get('services/trashed', 'ServiceController.trashed').middleware(['auth:jwt']);
+Route.get('services/trashed', 'ServiceController.trashed').middleware([
+  'auth:jwt',
+]);
 
-Route.post('services/:id/message', 'ServiceController.createMessage').middleware(['auth:jwt']);
+Route.post(
+  'services/:id/message',
+  'ServiceController.createMessage'
+).middleware(['auth:jwt']);
+
+Route.post('services/archive/:id', 'ServiceController.archive').middleware([
+  'auth:jwt',
+]);
 
 Route.resource('services', 'ServiceController').middleware(['auth:jwt']);

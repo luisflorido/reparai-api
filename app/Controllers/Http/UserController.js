@@ -1,4 +1,3 @@
-
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User');
 const Mail = use('Mail');
@@ -15,7 +14,12 @@ class UserController {
    */
 
   async store({ request, response }) {
-    const { ...rest } = request.only(['first_name', 'last_name', 'email', 'password']);
+    const { ...rest } = request.only([
+      'first_name',
+      'last_name',
+      'email',
+      'password',
+    ]);
 
     try {
       const user = await User.create(rest);
@@ -25,6 +29,7 @@ class UserController {
       }
       return response.status(200).json(user);
     } catch (err) {
+      console.log(err);
       return response.status(err.status || 409).json();
     }
   }
@@ -45,19 +50,24 @@ class UserController {
         .first();
 
       if (user) {
-        const resetToken = CryptoJS.SHA256(email).toString(
-          CryptoJS.enc.Hex,
-        );
+        const resetToken = CryptoJS.SHA256(email).toString(CryptoJS.enc.Hex);
 
         user.password_reset_token = resetToken;
         await user.save();
 
-        await Mail.send('emails.forgot', { name: user.first_name, link: `${Env.get('APP_FRONT_URL')}/users/forgot-password/${resetToken}` }, (message) => {
-          message
-            .to(user.email)
-            .from('luiisflorido@gmail.com')
-            .subject('Recuperação de senha');
-        });
+        await Mail.send(
+          'emails.forgot',
+          {
+            name: user.first_name,
+            resetToken,
+          },
+          message => {
+            message
+              .to(user.email)
+              .from('luiisflorido@gmail.com')
+              .subject('Recuperação de senha');
+          }
+        );
         return response.status(200).json();
       }
       return response.status(404).json();

@@ -1,4 +1,3 @@
-
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -25,21 +24,27 @@ class ServiceController {
     try {
       if (auth && auth.user) {
         const roles = await auth.user.getRoles();
-        if (roles.find((e) => e === 'adm')) {
+        if (roles.find(e => e === 'adm')) {
           const services = await Service.query()
-            .with('device', (builder) => builder.with('categories').with('locations'))
+            .with('device', builder =>
+              builder.with('categories').with('locations')
+            )
             .with('user')
-            .with('messages', (builder) => builder.with('user'))
+            .with('messages', builder => builder.with('user'))
+            .withTrashed()
             .fetch();
           if (services) {
             return response.status(200).json(services);
           }
         } else {
           const services = await Service.query()
-            .with('device', (builder) => builder.with('categories').with('locations'))
+            .with('device', builder =>
+              builder.with('categories').with('locations')
+            )
             .with('user')
-            .with('messages', (builder) => builder.with('user'))
+            .with('messages', builder => builder.with('user'))
             .where('user_id', auth.user.id)
+            .withTrashed()
             .fetch();
           if (services) {
             return response.status(200).json(services);
@@ -62,9 +67,9 @@ class ServiceController {
   async trashed({ response }) {
     try {
       const services = await Service.query()
-        .with('device', (builder) => builder.with('categories').with('locations'))
+        .with('device', builder => builder.with('categories').with('locations'))
         .with('user')
-        .with('messages', (builder) => builder.with('user'))
+        .with('messages', builder => builder.with('user'))
         .onlyTrashed()
         .fetch();
       if (services) {
@@ -109,16 +114,16 @@ class ServiceController {
    * @param {object} ctx
    * @param {Response} ctx.response
    */
-  async show({
-    params, response,
-  }) {
+  async show({ params, response }) {
     if (params && params.id) {
       const { id } = params;
       try {
         const service = await Service.query()
-          .with('device', (builder) => builder.with('categories').with('locations'))
+          .with('device', builder =>
+            builder.with('categories').with('locations')
+          )
           .with('user')
-          .with('messages', (builder) => builder.with('user'))
+          .with('messages', builder => builder.with('user'))
           .where('id', id)
           .first();
         if (service) {
@@ -133,25 +138,31 @@ class ServiceController {
   }
 
   /**
-   * Delete a service with id.
-   * DELETE services/:id
+   * Archive a service with id.
+   * POST services/archive/:id
    *
    * @param {object} ctx
    * @param {Response} ctx.response
    */
-  async destroy({ params, response }) {
+  async archive({ params, response }) {
     if (params && params.id) {
       const { id } = params;
       try {
         const service = await Service.query()
           .where('id', id)
+          .withTrashed()
           .first();
         if (service) {
-          await service.delete();
+          if (service.deleted_at) {
+            await service.restore();
+          } else {
+            await service.delete();
+          }
           return response.status(200).json();
         }
         return response.status(404).json();
       } catch (err) {
+        console.log(err);
         return response.status(err.status || 500).json();
       }
     }
@@ -166,9 +177,7 @@ class ServiceController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async createMessage({
-    auth, params, request, response,
-  }) {
+  async createMessage({ auth, params, request, response }) {
     if (params && params.id) {
       try {
         const { id } = params;
