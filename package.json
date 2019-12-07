@@ -19,6 +19,7 @@
     "@adonisjs/ace": "^5.0.8",
     "@adonisjs/auth": "^3.0.7",
     "@adonisjs/bodyparser": "^2.0.5",
+    "@adonisjs/cli": "^4.0.12",
     "@adonisjs/cors": "^1.0.7",
     "@adonisjs/fold": "^4.0.9",
     "@adonisjs/framework": "^5.0.9",
@@ -30,7 +31,7 @@
     "@radmen/adonis-lucid-soft-deletes": "^0.1.4",
     "adonis-acl": "^1.1.1",
     "crypto-js": "^3.1.9-1",
-    "sqlite3": "^4.1.0"
+    "sqlite3": "^4.0.6"
   },
   "devDependencies": {
     "eslint": "^6.6.0",

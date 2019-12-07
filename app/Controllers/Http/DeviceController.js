@@ -45,7 +45,12 @@ class DeviceController {
    */
   async store({ request, response }) {
     try {
-      const { locations_code, categories_code, ...rest } = request.only(['mac', 'name', 'locations_code', 'categories_code']);
+      const { locations_code, categories_code, ...rest } = request.only([
+        'mac',
+        'name',
+        'locations_code',
+        'categories_code',
+      ]);
       const device = await Device.create(rest);
       if (device) {
         await device.locations().attach(locations_code);
@@ -65,9 +70,7 @@ class DeviceController {
    * @param {object} ctx
    * @param {Response} ctx.response
    */
-  async show({
-    params, response,
-  }) {
+  async show({ params, response }) {
     try {
       if (params && params.id) {
         const { id } = params;
@@ -146,13 +149,15 @@ class DeviceController {
         if (category) {
           const device = await Device.find(id);
           if (device) {
-            const categories = await Promise.all(category.map(async (e) => {
-              const cat = await Category.find(e);
-              if (cat) {
-                return e;
-              }
-              return null;
-            }));
+            const categories = await Promise.all(
+              category.map(async e => {
+                const cat = await Category.find(e);
+                if (cat) {
+                  return e;
+                }
+                return null;
+              })
+            );
             await device.categories().sync(categories.filter(Boolean));
             return response.status(200).json();
           }
@@ -173,13 +178,15 @@ class DeviceController {
         if (location) {
           const device = await Device.find(id);
           if (device) {
-            const locations = await Promise.all(location.map(async (e) => {
-              const loc = await Location.find(e);
-              if (loc) {
-                return e;
-              }
-              return null;
-            }));
+            const locations = await Promise.all(
+              location.map(async e => {
+                const loc = await Location.find(e);
+                if (loc) {
+                  return e;
+                }
+                return null;
+              })
+            );
             await device.locations().sync(locations.filter(Boolean));
             return response.status(200).json();
           }
